@@ -7,13 +7,7 @@ An convenient command line runner for [Brofist][].
 
 ## Usage
 
-The simplest form is to just give `brofist` a directory with your specs, and
-we'll execute all files under that directory.
-
-    $ brofist tests/specs
-    
-You can also give one or more spec modules directly, in which case we'll only
-run those files:
+Just give brofist one or more spec files and we'll run those tests away, bro:
 
     $ brofist tests/specs/foo.js tests/specs/bar.js
     

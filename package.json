@@ -2,7 +2,7 @@
   "name": "brofist-cli",
   "version": "0.1.0",
   "description": "Command line runner for Brofist.",
-  "main": "index.js",
+  "bin": "./bin/brofist",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -22,7 +22,6 @@
     "brofist-tap": "~0.1.0",
     "docopt": "~0.4.0",
     "brofist": "~0.2.2",
-    "brofist-minimal": "~0.1.1",
-    "ffs": "~0.1.2"
+    "brofist-minimal": "~0.1.1"
   }
 }

@@ -48,7 +48,6 @@ var meta = require('../package.json')
 
 
 // -- Dependencies -----------------------------------------------------
-var ffs     = require('ffs')
 var path    = require('path')
 var docopt  = require('docopt').docopt
 var brofist = require('brofist')
@@ -135,7 +134,6 @@ function listReporters() {
 }
 
 function runTests(files, options) {
-  // TODO: handle folders
   var specs = files.map(absolutePath).map(require).reduce(cat, [])
 
   if (options.timeout)  brofist.Test.setTimeout(options.timeout)
