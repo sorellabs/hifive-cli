@@ -27,7 +27,7 @@ You can change the reporter being used with the `--reporter` option, check 'em
       brofist --version
 
     Options:
-      -r, --reporter <module>   Reporter module to use. [default: 'brofist-reporter']
+      -r, --reporter <module>   Reporter module to use. [default: brofist-minimal]
       -f, --filter <regexp>     Only runs tests that match the regexp.
       -t, --timeout <ms>        Timeout for asynchronous tests, in milliseconds.
       -s, --slow <ms>           Slow threshold, in milliseconds.
