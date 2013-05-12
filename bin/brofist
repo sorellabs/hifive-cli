@@ -31,9 +31,9 @@
 var doc = 'brofist --- runner for Brofist tests.                \n'
         + '                                                     \n'
         + 'Usage:                                               \n'
-        + '  brofist [options] <files...>                       \n'
+        + '  brofist [options] <files>...                       \n'
         + '  brofist list                                       \n'
-        + '  brofist -h, --help                                 \n'
+        + '  brofist -h | --help                                \n'
         + '  brofist --version                                  \n'
         + '                                                     \n'
         + 'Options:                                             \n'
@@ -49,7 +49,7 @@ var meta = require('../package.json')
 
 // -- Dependencies -----------------------------------------------------
 var path    = require('path')
-var docopt  = require('docopt')
+var docopt  = require('docopt').docopt
 var brofist = require('brofist')
 
 
@@ -73,9 +73,15 @@ function makeMatch(filter) {
          }
 }
 
+// :: [a], (a | [a]) -> [a]
 function cat(xs, x) {
   return Array.isArray(x)?  xs.concat(x)
   :      /* otherwise */    xs.concat([x])
+}
+
+// :: string -> string
+function absolutePath(p) {
+  return path.resolve(p)
 }
 
 // -- Commands ---------------------------------------------------------
@@ -94,7 +100,7 @@ function listReporters() {
 
 function runTests(files, options) {
   // TODO: handle folders
-  var specs = files.map(path.resolve).map(require).reduce(cat, [])
+  var specs = files.map(absolutePath).map(require).reduce(cat, [])
 
   if (options.timeout)  brofist.Test.setTimeout(options.timeout)
   if (options.slow)     brofist.Test.setSlow(options.slow)
@@ -102,9 +108,10 @@ function runTests(files, options) {
 
   var reporter = require(options.reporter)
 
-  brofist.run(reporter).otherwise(function(e) {
-    throw e
-  })
+  brofist.run(specs, reporter())
+         .then(function(results) {
+                 if (results.failed.length)  process.exit(1)
+               })
 }
 
 
@@ -118,4 +125,4 @@ void function(args) {
        : /* otherwise */        showHelp()
 
 
-}(docopt(doc, { help: false }))
+}(docopt(doc, { }))
