@@ -1,0 +1,121 @@
+#!/usr/bin/env node
+// # Module brofist
+//
+// A runner for Brofist tests.
+//
+//
+// Copyright (c) 2013 Quildreen Motta
+//
+// Permission is hereby granted, free of charge, to any person
+// obtaining a copy of this software and associated documentation files
+// (the "Software"), to deal in the Software without restriction,
+// including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software,
+// and to permit persons to whom the Software is furnished to do so,
+// subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be
+// included in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+// NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+// LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+// OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+// WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+
+
+// -- Command line stuff -----------------------------------------------
+var doc = 'brofist --- runner for Brofist tests.                \n'
+        + '                                                     \n'
+        + 'Usage:                                               \n'
+        + '  brofist [options] <files...>                       \n'
+        + '  brofist list                                       \n'
+        + '  brofist -h, --help                                 \n'
+        + '  brofist --version                                  \n'
+        + '                                                     \n'
+        + 'Options:                                             \n'
+        + '  -r, --reporter <module>    Reporter to use. [default: "brofist-reporter"]\n'
+        + '  -f, --filter <regexp>      Only tests that match the pattern.\n'
+        + '  -t, --timeout <ms>         Timeout for async tests, in ms.\n'
+        + '  -s, --slow <ms>            Slow threshold, in ms.\n'
+        + '  -h, --help                 Displays usage help and exits.\n'
+        + '  --version                  Displays version number and exits.\n'
+
+var meta = require('../package.json')
+
+
+// -- Dependencies -----------------------------------------------------
+var path    = require('path')
+var docopt  = require('docopt')
+var brofist = require('brofist')
+
+
+// -- Helpers ----------------------------------------------------------
+
+// :: object string -> object string
+function options(args) {
+  return { filter   : args['--filter']
+         , reporter : args['--reporter']
+         , slow     : args['--slow']
+         , timeout  : args['--timeout']
+         }
+}
+
+// :: string -> (@Test => () -> bool)
+function makeMatch(filter) {
+  var re = new RegExp(filter)
+
+  return function() {
+           return re.test(this.fullTitle().join(' '))
+         }
+}
+
+function cat(xs, x) {
+  return Array.isArray(x)?  xs.concat(x)
+  :      /* otherwise */    xs.concat([x])
+}
+
+// -- Commands ---------------------------------------------------------
+
+function showVersion() {
+  console.log(meta.version)
+}
+
+function showHelp() {
+  console.log(doc)
+}
+
+function listReporters() {
+  // TODO:
+}
+
+function runTests(files, options) {
+  // TODO: handle folders
+  var specs = files.map(path.resolve).map(require).reduce(cat, [])
+
+  if (options.timeout)  brofist.Test.setTimeout(options.timeout)
+  if (options.slow)     brofist.Test.setSlow(options.slow)
+  if (options.filter)   brofist.Test.setEnabled(makeMatch(options.filter))
+
+  var reporter = require(options.reporter)
+
+  brofist.run(reporter).otherwise(function(e) {
+    throw e
+  })
+}
+
+
+// -- Main -------------------------------------------------------------
+void function(args) {
+
+         args['--version']?     showVersion()
+       : args['--help']?        showHelp()
+       : args['list']?          listReporters()
+       : args['<files>']?       runTests(args['<files>'], options(args))
+       : /* otherwise */        showHelp()
+
+
+}(docopt(doc, { help: false }))
