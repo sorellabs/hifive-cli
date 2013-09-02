@@ -1,4 +1,9 @@
-# brofist-cli
+brofist-cli
+===========
+
+[![unstable](http://hughsk.github.io/stability-badges/dist/unstable.svg)](http://github.com/hughsk/stability-badges)
+![Dependencies Status](https://david-dm.org/brofistjs/brofist-cli.png)
+
 
 An convenient command line runner for [Brofist][].
 
